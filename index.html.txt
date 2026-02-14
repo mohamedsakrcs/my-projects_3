@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Maryoma · will you be my Valentine?</title>
+  <!-- fonts & style (all in one for simplicity, but fully responsive) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(145deg, #fff0ed 0%, #ffe0da 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.5s ease;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* floating hearts background (static + animated later) */
+    .bg-hearts {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .heart-float {
+      position: absolute;
+      color: rgba(255, 120, 150, 0.2);
+      font-size: 2rem;
+      user-select: none;
+      animation: floatAround 18s infinite linear;
+    }
+
+    @keyframes floatAround {
+      0% { transform: translateY(100vh) rotate(0deg) scale(0.8); opacity: 0; }
+      10% { opacity: 0.4; }
+      90% { opacity: 0.3; }
+      100% { transform: translateY(-10vh) rotate(360deg) scale(1.5); opacity: 0; }
+    }
+
+    /* main container */
+    .container {
+      width: 100%;
+      max-width: 700px;
+      padding: 1.5rem;
+      z-index: 10;
+      position: relative;
+      transition: opacity 0.6s ease;
+    }
+
+    /* proposal card */
+    .proposal-card {
+      background: rgba(255, 250, 245, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 48px;
+      padding: 2.8rem 2rem;
+      box-shadow: 0 30px 50px rgba(200, 100, 120, 0.25);
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      text-align: center;
+      transition: opacity 0.5s, transform 0.3s;
+    }
+
+    .question {
+      font-size: 2.5rem;
+      font-weight: 400;
+      color: #b34e5e;
+      line-height: 1.3;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 4px 12px rgba(255, 180, 180, 0.5);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      background: white;
+      padding: 1rem 3rem;
+      border-radius: 60px;
+      font-size: 2rem;
+      font-weight: 500;
+      font-family: 'Quicksand', sans-serif;
+      box-shadow: 0 10px 20px rgba(200, 90, 110, 0.3);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 160px;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .btn-yes {
+      background: #ffb0b5;
+      color: #fff5f5;
+      text-shadow: 0 2px 5px rgba(150, 50, 50, 0.2);
+    }
+
+    .btn-yes:hover {
+      background: #ffa0a8;
+      transform: scale(1.05);
+      box-shadow: 0 15px 25px #f5b0b0;
+    }
+
+    .btn-no {
+      background: #ffe2e2;
+      color: #a66666;
+      position: relative;
+      z-index: 50;
+    }
+
+    /* second page (hidden initially) */
+    .second-page {
+      display: none;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+
+    .second-page.show {
+      display: block;
+      opacity: 1;
+    }
+
+    /* romantic cards */
+    .card {
+      background: rgba(255, 250, 245, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 36px;
+      padding: 2rem 1.8rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 35px rgba(190, 90, 90, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    h1, h2 {
+      font-weight: 400;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      color: #b14050;
+      margin-bottom: 0.2rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: #b5646b;
+      border-bottom: 1px dashed #f8c2c2;
+      display: inline-block;
+      padding-bottom: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .welcome-message {
+      font-size: 1.4rem;
+      text-align: center;
+      color: #965a5a;
+      margin: 1rem 0 0.5rem;
+      font-style: italic;
+    }
+
+    /* gallery */
+    .gallery-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.8rem;
+    }
+
+    .gallery-item {
+      flex: 1 1 calc(50% - 0.5rem);
+      min-width: 130px;
+      aspect-ratio: 1 / 1.1;
+      border-radius: 28px;
+      background: #ffdbd3;
+      box-shadow: 0 10px 18px -6px #dba1a1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: #b16464;
+      border: 3px solid white;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #fcd8d2;
+    }
+
+    /* placeholder images (replace with actual photos later) */
+    .gallery-item:nth-child(1) { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.6"><circle cx="50" cy="45" r="25" fill="%23f9c2c2"/><circle cx="35" cy="40" r="5" fill="%23944949"/><circle cx="65" cy="40" r="5" fill="%23944949"/><path d="M35 60 Q50 75 65 60" stroke="%23944949" stroke-width="4" fill="none"/><path d="M20 20 L35 10 L50 20 L65 10 L80 20" stroke="%23ffa5a5" fill="none" stroke-width="4"/></svg>'); background-size: cover; }
+    .gallery-item:nth-child(2) { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.6"><path d="M30,40 Q50,10 70,40 Q80,55 70,70 Q50,95 30,70 Q20,55 30,40" fill="%23f5b1aa"/><circle cx="45" cy="45" r="3" fill="%23933f3f"/><circle cx="55" cy="45" r="3" fill="%23933f3f"/></svg>'); background-size: cover; }
+    .gallery-item:nth-child(3) { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.6"><circle cx="50" cy="50" r="30" fill="%23ffd0c6"/><circle cx="40" cy="45" r="4" fill="%23944949"/><circle cx="60" cy="45" r="4" fill="%23944949"/><ellipse cx="50" cy="63" rx="12" ry="7" fill="%23944949"/></svg>'); background-size: cover; }
+    .gallery-item:nth-child(4) { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.6"><path d="M25,35 Q50,5 75,35 Q90,50 75,70 Q50,98 25,70 Q10,50 25,35" fill="%23f6bfbc"/><circle cx="40" cy="45" r="4" fill="%23944949"/><circle cx="60" cy="45" r="4" fill="%23944949"/></svg>'); background-size: cover; }
+    .gallery-item span {
+      background: rgba(255, 240, 240, 0.8);
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      backdrop-filter: blur(2px);
+      color: #b45252;
+      border: 1px solid white;
+    }
+
+    .gallery-note {
+      text-align: center;
+      margin-top: 1rem;
+      color: #b77a7a;
+      font-size: 0.95rem;
+    }
+
+    /* relationship counter */
+    .counter-block {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      margin: 2rem 0 1rem;
+    }
+
+    .counter-unit {
+      background: white;
+      border-radius: 50px;
+      padding: 0.8rem 1.3rem;
+      min-width: 85px;
+      text-align: center;
+      box-shadow: 0 10px 15px rgba(210, 120, 120, 0.2);
+      border: 1px solid #ffdada;
+    }
+
+    .counter-unit .num {
+      font-size: 2.4rem;
+      font-weight: 400;
+      color: #c45a6a;
+      line-height: 1.2;
+    }
+
+    .counter-unit .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #b28282;
+    }
+
+    .counter-caption {
+      text-align: center;
+      color: #b56464;
+      font-size: 1.1rem;
+      margin-top: 0.5rem;
+    }
+
+    /* signature */
+    .signature {
+      text-align: right;
+      font-size: 1.6rem;
+      color: #c7646d;
+      margin-top: 2rem;
+      font-weight: 300;
+    }
+
+    /* heart explosion (cute animations) */
+    .heart-burst {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .burst-heart {
+      position: absolute;
+      color: #ff8a9f;
+      font-size: 2.5rem;
+      animation: burst 1.5s ease-out forwards;
+    }
+
+    @keyframes burst {
+      0% { transform: scale(0.3) translate(0, 0); opacity: 1; }
+      100% { transform: scale(2) translate(var(--dx), var(--dy)); opacity: 0; }
+    }
+
+    /* mobile adjustments */
+    @media (max-width: 500px) {
+      .question { font-size: 2rem; }
+      .btn { font-size: 1.8rem; padding: 0.8rem 2rem; min-width: 130px; }
+      .button-group { gap: 1rem; }
+      h1 { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- background floating hearts (always present) -->
+  <div class="bg-hearts" id="bgHearts"></div>
+
+  <!-- main container -->
+  <div class="container" id="appContainer">
+    <!-- PROPOSAL PAGE -->
+    <div id="proposalPage" class="proposal-card">
+      <div class="question">Maryoma, will you be my Valentine? ❤️</div>
+      <div class="button-group">
+        <button class="btn btn-yes" id="yesBtn">YES</button>
+        <button class="btn btn-no" id="noBtn">NO</button>
+      </div>
+    </div>
+
+    <!-- SECOND PAGE (hidden initially) -->
+    <div id="secondPage" class="second-page">
+      <!-- romantic welcome -->
+      <div class="card" style="text-align: center;">
+        <h1>To My Love, Maryomty</h1>
+        <p class="welcome-message">you said YES! my heart is yours forever 💖</p>
+        <div style="font-size: 2rem; margin: 0.5rem 0;">🌹</div>
+      </div>
+
+      <!-- photo gallery -->
+      <div class="card">
+        <h2>our moments</h2>
+        <div class="gallery-grid">
+          <div class="gallery-item"><span>💞</span></div>
+          <div class="gallery-item"><span>🌸</span></div>
+          <div class="gallery-item"><span>✨</span></div>
+          <div class="gallery-item"><span>🌹</span></div>
+        </div>
+        <p class="gallery-note">(Madmood will replace these with our real photos)</p>
+      </div>
+
+      <!-- relationship counter from March 4, 2024 -->
+      <div class="card">
+        <h2>together since March 4, 2024</h2>
+        <div class="counter-block" id="counter">
+          <div class="counter-unit"><span class="num" id="years">0</span><span class="label">years</span></div>
+          <div class="counter-unit"><span class="num" id="months">0</span><span class="label">months</span></div>
+          <div class="counter-unit"><span class="num" id="days">0</span><span class="label">days</span></div>
+          <div class="counter-unit"><span class="num" id="hours">0</span><span class="label">hours</span></div>
+          <div class="counter-unit"><span class="num" id="minutes">0</span><span class="label">min</span></div>
+          <div class="counter-unit"><span class="num" id="seconds">0</span><span class="label">sec</span></div>
+        </div>
+        <p class="counter-caption">every second with you is magic ✨</p>
+        <div class="signature">— Madmood</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- container for heart explosion -->
+  <div id="heartBurst" class="heart-burst"></div>
+
+  <script>
+    (function() {
+      // ---- background floating hearts ----
+      const bgHearts = document.getElementById('bgHearts');
+      for (let i = 0; i < 18; i++) {
+        let heart = document.createElement('div');
+        heart.className = 'heart-float';
+        heart.innerText = ['❤️','🧡','💖','💗','💘','💝','🌸','🌹'][Math.floor(Math.random()*8)];
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDelay = Math.random() * 15 + 's';
+        heart.style.fontSize = (Math.random() * 2 + 1.2) + 'rem';
+        heart.style.opacity = 0.2;
+        bgHearts.appendChild(heart);
+      }
+
+      // ---- mischievous NO button ----
+      const noBtn = document.getElementById('noBtn');
+      const yesBtn = document.getElementById('yesBtn');
+      const proposalPage = document.getElementById('proposalPage');
+      const secondPage = document.getElementById('secondPage');
+      const container = document.getElementById('appContainer');
+
+      // make the NO button run away
+      if (noBtn) {
+        noBtn.addEventListener('mouseover', function(e) {
+          // playful evasion - move to random nearby position, but not too far
+          const x = Math.random() * 200 - 100; // -100 to 100
+          const y = Math.random() * 200 - 100;
+          // but keep it inside the viewport roughly
+          const currentLeft = noBtn.offsetLeft;
+          const currentTop = noBtn.offsetTop;
+          // apply transform
+          noBtn.style.transform = `translate(${x}px, ${y}px)`;
+          noBtn.style.transition = 'transform 0.2s ease';
+        });
+
+        // also evade on touch for mobile
+        noBtn.addEventListener('touchstart', function(e) {
+          e.preventDefault();
+          const x = Math.random() * 200 - 100;
+          const y = Math.random() * 200 - 100;
+          noBtn.style.transform = `translate(${x}px, ${y}px)`;
+          noBtn.style.transition = 'transform 0.2s ease';
+        });
+      }
+
+      // ---- YES button click ----
+      yesBtn.addEventListener('click', function(e) {
+        // 1. heart explosion
+        for (let i = 0; i < 28; i++) {
+          createBurstHeart();
+        }
+
+        // 2. hide proposal card with fade, show second page
+        proposalPage.style.opacity = '0';
+        setTimeout(() => {
+          proposalPage.style.display = 'none';
+          secondPage.classList.add('show');
+          // smooth scroll to top
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 500);
+
+        // 3. start relationship counter (update every second)
+        startCounter();
+      });
+
+      // burst heart factory
+      function createBurstHeart() {
+        const burstContainer = document.getElementById('heartBurst');
+        const heartEl = document.createElement('div');
+        heartEl.className = 'burst-heart';
+        heartEl.innerText = ['❤️','🧡','💖','💗','💘','💝','🌸','🌹','💕'][Math.floor(Math.random()*9)];
+        // random start position around center
+        heartEl.style.left = (50 + (Math.random()*40 - 20)) + '%';
+        heartEl.style.top = (50 + (Math.random()*40 - 20)) + '%';
+        // random direction
+        const dx = (Math.random()*400 - 200) + 'px';
+        const dy = (Math.random()*400 - 200) + 'px';
+        heartEl.style.setProperty('--dx', dx);
+        heartEl.style.setProperty('--dy', dy);
+        burstContainer.appendChild(heartEl);
+        setTimeout(() => heartEl.remove(), 1500);
+      }
+
+      // counter start from March 4, 2024
+      function startCounter() {
+        const startDate = new Date('2024-03-04T00:00:00'); // March 4, 2024
+
+        function updateCounter() {
+          const now = new Date();
+          let diff = now - startDate;
+          if (diff < 0) diff = 0;
+
+          const seconds = Math.floor(diff / 1000) % 60;
+          const minutes = Math.floor(diff / (1000 * 60)) % 60;
+          const hours = Math.floor(diff / (1000 * 60 * 60)) % 24;
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24)) % 30; // approx month days
+          const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30)) % 12;
+          const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+
+          document.getElementById('years').innerText = years;
+          document.getElementById('months').innerText = months;
+          document.getElementById('days').innerText = days;
+          document.getElementById('hours').innerText = hours;
+          document.getElementById('minutes').innerText = minutes;
+          document.getElementById('seconds').innerText = seconds;
+        }
+
+        updateCounter();
+        setInterval(updateCounter, 1000);
+      }
+
+      // extra: if someone tries to click NO anyway, we can also move it on click (but it's already evading)
+      noBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        // even if they manage to click, we just move it again and show no reaction
+        const x = Math.random() * 300 - 150;
+        const y = Math.random() * 300 - 150;
+        noBtn.style.transform = `translate(${x}px, ${y}px)`;
+      });
+
+      // ensure NO button resets position not to go off screen too far (but it's fine)
+      // also make it harder on mobile by moving on touch
+    })();
+  </script>
+</body>
+</html>
